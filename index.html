@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elemental 5 Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .chatbox { max-width: 400px; margin: auto; border: 1px solid #ccc; padding: 10px; border-radius: 10px; }
+        .messages { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; }
+        .input-area { display: flex; margin-top: 10px; }
+        input { flex: 1; padding: 5px; }
+        button { margin-left: 5px; padding: 5px 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Elemental 5 Chatbot</h2>
+    <div class="chatbox">
+        <div class="messages" id="chatMessages"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        async function sendMessage() {
+            let input = document.getElementById("userInput").value;
+            if (!input.trim()) return;
+
+            let chatMessages = document.getElementById("chatMessages");
+            chatMessages.innerHTML += `<div><strong>You:</strong> ${input}</div>`;
+
+            document.getElementById("userInput").value = "";
+
+            let response = await fetch("https://api.openai.com/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer YOUR_OPENAI_API_KEY"
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{ role: "system", content: "You are an AI assistant for Elemental 5 Gym. Answer questions about classes, schedules, and pricing." },
+                        { role: "user", content: input }
+                    ]
+                })
+            });
+
+            let data = await response.json();
+            chatMessages.innerHTML += `<div><strong>Bot:</strong> ${data.choices[0].message.content}</div>`;
+        }
+    </script>
+</body>
+</html>
